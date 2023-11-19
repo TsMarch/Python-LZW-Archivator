@@ -1,6 +1,9 @@
+import sys
+
+
 def encoded_file(encoded_text: str):
     """Данная функция записывает закодированный текст в файл."""
-    with open("file.txt", "w") as file:
+    with open("file_encoded.txt", "w") as file:
         data = file.write(encoded_text)
 
 
@@ -10,7 +13,13 @@ def decoded_file(decoded_text: str):
         data = file.write(decoded_text)
 
 
-def archiver(text: str) -> str:
+def read_file() -> list:
+    with open("input_file.txt", "r") as file:
+        data = [i for i in file.read()]
+        return data
+
+
+def archiver(text: list) -> str:
     """
     На выходе из функции получаем строку с числами. Каждое число являет собой порядковый номер закодированного символа и сочетания символов из словаря.
     Создаем изначальный словарь для записи в него unicode символов для последующего сжатия строки. В данном случае парой ключ - значение является символ и его номер unicode.
@@ -76,18 +85,24 @@ def unpacker(text: str) -> str:
 
 def compression_measure(encoded, res):
     """
-    Данная функция на вход принимает результат функции archiver, делит на длину входного теста и выдает степень сжатия текста.
+    Данная функция делит используемый объем памяти закодированного текста на объем памяти исходного текста.
     """
-
-    code_length = len([int(i) for i in encoded.split()])
-    return code_length / len(res)
+    return sys.getsizeof(encoded) / sys.getsizeof(res)
 
 
-if __name__ == "__main__":
-    text = input("Введите текст для сжатия \n")
+#if __name__ == "__main__":
+ #   text = read_file()
+  #  archive = archiver(text)
+   # output_file = encoded_file(archive)
+    #unpack = unpacker(archive)
+    #check_file = decoded_file(unpack)
+    #print("\nСтепень сжатия текста составила:", f"{1 - compression_measure(archive, text):.2%}")
+
+def start_programm():
+    text = read_file()
     archive = archiver(text)
     output_file = encoded_file(archive)
     unpack = unpacker(archive)
     check_file = decoded_file(unpack)
-    print("\nСтепень сжатия текста составила:", f"{compression_measure(archive, text):.2%}")
+    print("\nСтепень сжатия текста составила:", f"{1 - compression_measure(archive, text):.2%}")
 
