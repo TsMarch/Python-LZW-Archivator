@@ -1,5 +1,13 @@
-def file(encoded_text):
-    pass
+def encoded_file(encoded_text: str):
+    """Данная функция записывает закодированный текст в файл."""
+    with open("file.txt", "w") as file:
+        data = file.write(encoded_text)
+
+
+def decoded_file(decoded_text: str):
+    """Данная функция записывает раскодированный текст в файл."""
+    with open("file_decoded.txt", "w") as file:
+        data = file.write(decoded_text)
 
 
 def archiver(text: str) -> str:
@@ -12,7 +20,6 @@ def archiver(text: str) -> str:
 
     last_char = 1104
     dict_all = {**{chr(i): i for i in range(256)}, **{chr(i): i for i in range(1040, 1104)}}
-
     s = ""
     res = []
 
@@ -79,6 +86,8 @@ def compression_measure(encoded, res):
 if __name__ == "__main__":
     text = input("Введите текст для сжатия \n")
     archive = archiver(text)
+    output_file = encoded_file(archive)
     unpack = unpacker(archive)
+    check_file = decoded_file(unpack)
     print("\nСтепень сжатия текста составила:", f"{compression_measure(archive, text):.2%}")
 
