@@ -1,17 +1,21 @@
+def file(encoded_text):
+    pass
+
+
 def archiver(text: str) -> str:
     """
     На выходе из функции получаем строку с числами. Каждое число являет собой порядковый номер закодированного символа и сочетания символов из словаря.
-    Создаем изначальный словарь для записи в него unicode символов для последующего сжатия строки. В данном случае парой ключ - значение является символ и его номер unicode. 
+    Создаем изначальный словарь для записи в него unicode символов для последующего сжатия строки. В данном случае парой ключ - значение является символ и его номер unicode.
     В данном случае словарь гарантированно содержит знаки препинания вместе с латинскими, кириллическими символами.
-    Если падает ошибка ValueError значит проблема заключается во входящем тексте. Будет выведено сообщение с проблемным символом.  
-    """ 
+    Если падает ошибка ValueError значит проблема заключается во входящем тексте. Будет выведено сообщение с проблемным символом.
+    """
 
     last_char = 1104
     dict_all = {**{chr(i): i for i in range(256)}, **{chr(i): i for i in range(1040, 1104)}}
 
     s = ""
     res = []
-    
+
     for i in text:
         try:
             s_char = s + i
@@ -24,7 +28,7 @@ def archiver(text: str) -> str:
                 s = i
         except KeyError:
             raise ValueError(f"""Ошибка кодировки. В словаре не существует следующего символа: {s_char} """)
-        
+
     if s:
         res.append(str(dict_all[s]))
 
@@ -32,9 +36,8 @@ def archiver(text: str) -> str:
     return encoded
 
 
-
 def unpacker(text: str) -> str:
-    """ 
+    """
     Функция распаковки на выход дает разархивированную строку.
     Обратите внимание, что словарь создается в обратном порядке. Ключом является номер unicode, а значением сам символ.
     Ошибка компрессии может выпасть при разнице в формировании словаря.
@@ -44,8 +47,6 @@ def unpacker(text: str) -> str:
     dict_all = {**{i: chr(i) for i in range(256)}, **{i: chr(i) for i in range(1040, 1104)}}
 
     text = [int(i) for i in text.split()]
-
-
     s = chr(text.pop(0))
     res = ""
     res += s
@@ -63,15 +64,21 @@ def unpacker(text: str) -> str:
         last_char += 1
 
         s = entry
-
-
     return res
+
 
 def compression_measure(encoded, res):
     """
-    Данная функция на вход принимает результат функции archiver, делит на длину входного теста и выдает степень сжатия текста. 
+    Данная функция на вход принимает результат функции archiver, делит на длину входного теста и выдает степень сжатия текста.
     """
 
-    code_lenghth = len([int(i) for i in encoded.split()])
-    return code_lenghth/len(res)
+    code_length = len([int(i) for i in encoded.split()])
+    return code_length / len(res)
+
+
+if __name__ == "__main__":
+    text = input("Введите текст для сжатия \n")
+    archive = archiver(text)
+    unpack = unpacker(archive)
+    print("\nСтепень сжатия текста составила:", f"{compression_measure(archive, text):.2%}")
 
