@@ -1,4 +1,7 @@
-# Version 1.0.3                           
+# Version 1.0.4
+Now decoding from txt files. Output and decoded text also create files. Graphic interface implementation started. 
+
+# Version 1.0.3
 Added ability to run from archivator.py file.
 
 # Version 1.0.2
