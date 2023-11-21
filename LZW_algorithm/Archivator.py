@@ -4,13 +4,13 @@ import sys
 def encoded_file(encoded_text: str):
     """Данная функция записывает закодированный текст в файл."""
     with open("file_encoded.txt", "w") as file:
-        data = file.write(encoded_text)
+        file.write(encoded_text)
 
 
 def decoded_file(decoded_text: str):
     """Данная функция записывает раскодированный текст в файл."""
     with open("file_decoded.txt", "w") as file:
-        data = file.write(decoded_text)
+        file.write(decoded_text)
 
 
 def read_file() -> list:
@@ -19,12 +19,13 @@ def read_file() -> list:
         return data
 
 
-def archiver(text: list) -> str:
+def archiver(text_encode: list) -> str:
     """
-    На выходе из функции получаем строку с числами. Каждое число являет собой порядковый номер закодированного символа и сочетания символов из словаря.
-    Создаем изначальный словарь для записи в него unicode символов для последующего сжатия строки. В данном случае парой ключ - значение является символ и его номер unicode.
-    В данном случае словарь гарантированно содержит знаки препинания вместе с латинскими, кириллическими символами.
-    Если падает ошибка ValueError значит проблема заключается во входящем тексте. Будет выведено сообщение с проблемным символом.
+    На выходе из функции получаем строку с числами. Каждое число являет собой порядковый номер закодированного символа и
+    сочетания символов из словаря. Создаем изначальный словарь для записи в него unicode символов для последующего
+    сжатия строки. В данном случае парой ключ - значение является символ и его номер unicode. В данном случае словарь
+    гарантированно содержит знаки препинания вместе с латинскими, кириллическими символами. Если падает ошибка
+    ValueError значит проблема заключается во входящем тексте. Будет выведено сообщение с проблемным символом.
     """
 
     last_char = 1104
@@ -32,7 +33,7 @@ def archiver(text: list) -> str:
     s = ""
     res = []
 
-    for i in text:
+    for i in text_encode:
         try:
             s_char = s + i
             if s_char in dict_all:
@@ -52,7 +53,7 @@ def archiver(text: list) -> str:
     return encoded
 
 
-def unpacker(text: str) -> str:
+def unpacker(text_decode: str) -> str:
     """
     Функция распаковки на выход дает разархивированную строку.
     Обратите внимание, что словарь создается в обратном порядке. Ключом является номер unicode, а значением сам символ.
@@ -62,12 +63,12 @@ def unpacker(text: str) -> str:
     last_char = 1104
     dict_all = {**{i: chr(i) for i in range(256)}, **{i: chr(i) for i in range(1040, 1104)}}
 
-    text = [int(i) for i in text.split()]
-    s = chr(text.pop(0))
+    inner_text = [int(i) for i in text_decode.split()]
+    s = chr(inner_text.pop(0))
     res = ""
     res += s
 
-    for i in text:
+    for i in inner_text:
         if i in dict_all:
             entry = dict_all[i]
         elif i == last_char:
@@ -90,19 +91,10 @@ def compression_measure(encoded, res):
     return sys.getsizeof(encoded) / sys.getsizeof(res)
 
 
-#if __name__ == "__main__":
- #   text = read_file()
-  #  archive = archiver(text)
-   # output_file = encoded_file(archive)
-    #unpack = unpacker(archive)
-    #check_file = decoded_file(unpack)
-    #print("\nСтепень сжатия текста составила:", f"{1 - compression_measure(archive, text):.2%}")
-
-def start_programm():
+if __name__ == "__main__":
     text = read_file()
     archive = archiver(text)
     output_file = encoded_file(archive)
     unpack = unpacker(archive)
     check_file = decoded_file(unpack)
     print("\nСтепень сжатия текста составила:", f"{1 - compression_measure(archive, text):.2%}")
-
