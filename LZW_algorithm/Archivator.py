@@ -5,6 +5,13 @@ from pydantic import BaseModel
 
 class File:
     @staticmethod
+    def read_file() -> List[str]:
+        """Данная функция считывает текст из файла и дает на выходе list со str внутри."""
+        with open("input_file.txt", "r") as file:
+            data = [i for i in file.read()]
+            return data
+
+    @staticmethod
     def encoded_file(encoded_text: str):
         """Данная функция записывает закодированный текст в файл."""
         with open("file_encoded.txt", "w") as file:
@@ -18,13 +25,7 @@ class File:
 
 
 class EntryText(BaseModel):
-    text_to_encode: list
-
-
-def read_file() -> list:
-    with open("input_file.txt", "r") as file:
-        data = [i for i in file.read()]
-        return data
+    text_to_encode: List[str] = File.read_file()
 
 
 def archiver(text_encode: List[str]) -> str:
@@ -36,14 +37,15 @@ def archiver(text_encode: List[str]) -> str:
     ValueError значит проблема заключается во входящем тексте. Будет выведено сообщение с проблемным символом.
     """
 
-    last_char = 1104
-    dict_all = {**{chr(i): i for i in range(256)}, **{chr(i): i for i in range(1040, 1104)}}
+    # dict_all = {chr(i): i for i in range(256)} | {chr(i): i for i in range(1040, 1104)}
+    dict_all = {i: ord(i) for i in text_encode}
+    last_char = int(max(sorted([i for i in dict_all.values()]))) + 1
     s = ""
     res = []
 
     for i in text_encode:
+        s_char = s + i
         try:
-            s_char = s + i
             if s_char in dict_all:
                 s = s_char
             else:
@@ -52,7 +54,8 @@ def archiver(text_encode: List[str]) -> str:
                 last_char += 1
                 s = i
         except KeyError:
-            raise ValueError(f"""Ошибка кодировки. В словаре не существует следующего символа: {s_char} """)
+            print(f"""Ошибка кодировки. В словаре не существует следующего символа: {s_char} """)
+            break
 
     if s:
         res.append(str(dict_all[s]))
@@ -68,9 +71,9 @@ def unpacker(text_decode: str) -> str:
     Ошибка компрессии может выпасть при разнице в формировании словаря.
     """
 
-    last_char = 1104
-    dict_all = {**{i: chr(i) for i in range(256)}, **{i: chr(i) for i in range(1040, 1104)}}
-
+    # dict_all = {**{i: chr(i) for i in range(256)}, **{i: chr(i) for i in range(1040, 1104)}}
+    dict_all = {ord(i): i for i in EntryText().text_to_encode}
+    last_char = int(max(sorted([i for i in dict_all.keys()]))) + 1
     inner_text = [int(i) for i in text_decode.split()]
     s = chr(inner_text.pop(0))
     res = ""
@@ -100,9 +103,9 @@ def compression_measure(encoded, res):
 
 
 if __name__ == "__main__":
-    text = read_file()
-    archive = archiver(text)
+    entry_text = EntryText()
+    archive = archiver(entry_text.text_to_encode)
     File.encoded_file(archive)
     unpack = unpacker(archive)
     File.decoded_file(unpack)
-    print("\nСтепень сжатия текста составила:", f"{1 - compression_measure(archive, text):.2%}")
+    print("\nСтепень сжатия текста составила:", f"{1 - compression_measure(archive, entry_text.text_to_encode):.2%}")
