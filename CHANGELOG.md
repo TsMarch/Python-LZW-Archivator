@@ -1,3 +1,6 @@
+# Version 1.0.5
+Major update to archiving system. The dictionary is now created based on the incoming text.
+
 # Version 1.0.4
 Now decoding from txt files. Output and decoded text also create files. Graphic interface implementation started. 
 
