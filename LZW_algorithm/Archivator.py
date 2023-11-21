@@ -1,16 +1,24 @@
 import sys
+from typing import List
+from pydantic import BaseModel
 
 
-def encoded_file(encoded_text: str):
-    """Данная функция записывает закодированный текст в файл."""
-    with open("file_encoded.txt", "w") as file:
-        file.write(encoded_text)
+class File:
+    @staticmethod
+    def encoded_file(encoded_text: str):
+        """Данная функция записывает закодированный текст в файл."""
+        with open("file_encoded.txt", "w") as file:
+            file.write(encoded_text)
+
+    @staticmethod
+    def decoded_file(decoded_text: str):
+        """Данная функция записывает раскодированный текст в файл."""
+        with open("file_decoded.txt", "w") as file:
+            file.write(decoded_text)
 
 
-def decoded_file(decoded_text: str):
-    """Данная функция записывает раскодированный текст в файл."""
-    with open("file_decoded.txt", "w") as file:
-        file.write(decoded_text)
+class EntryText(BaseModel):
+    text_to_encode: list
 
 
 def read_file() -> list:
@@ -19,7 +27,7 @@ def read_file() -> list:
         return data
 
 
-def archiver(text_encode: list) -> str:
+def archiver(text_encode: List[str]) -> str:
     """
     На выходе из функции получаем строку с числами. Каждое число являет собой порядковый номер закодированного символа и
     сочетания символов из словаря. Создаем изначальный словарь для записи в него unicode символов для последующего
@@ -94,7 +102,7 @@ def compression_measure(encoded, res):
 if __name__ == "__main__":
     text = read_file()
     archive = archiver(text)
-    output_file = encoded_file(archive)
+    File.encoded_file(archive)
     unpack = unpacker(archive)
-    check_file = decoded_file(unpack)
+    File.decoded_file(unpack)
     print("\nСтепень сжатия текста составила:", f"{1 - compression_measure(archive, text):.2%}")
